@@ -1,0 +1,69 @@
+<body>
+    <header>
+
+    </header>
+    <nav class="navbar navbar-expand-sm p-3 my-3">
+        <a class="navbar-brand" href="/">Patient Portal</a>
+    </nav>
+    <main>
+    <div class="container-fluid p-3 my-3">
+        
+     
+        <br><br><br><br>
+        <div class="jumbotron-fluid">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-4">
+                     
+                    </div>
+                    <br><br><br><br>
+                    <div class="col-md-8" >
+                        <div>
+                            Log in below
+                        </div>
+                        <br><br>
+                        <div>
+                            {{#if errors}}
+                                {{#if errors.email}}
+                                <div class="alert alert-warning alert-dismissible" role="alert">
+                                {{errors.email}}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                {{/if}}
+                                {{#if errors.password}}
+                                <div class="alert alert-warning alert-dismissible" role="alert">
+                                {{errors.password}}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                {{/if}}
+                            {{/if}}
+                        </div>
+                        <br><br>
+
+                        <br>
+                        <form action="/user/login" method="POST" class="needs-validation" id="login__form">
+                            
+                            <div class="form-group login__form">
+                                <label for="name"> Email Address:</label>
+                                <input type="text" class="form-control" name="email" placeholder="Enter email address" id=""><br>  
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" class="form-control" name="password" placeholder="Enter password" id="pn"><br>
+                            </div>
+                            <input type="submit" value="Log in" class="btn btn-primary btn-block second" role="button" id="verify_patient">                          
+                        </form>
+                        <div>
+                            Not registered?<a class="nav-link" href="/user/register">Register</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </main>
+</body>

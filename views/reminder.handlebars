@@ -1,0 +1,170 @@
+<div class="container-fluid">
+    <br><br>
+    <div class="add__new__reminder">
+      <h6>Add New Reminder</h6>
+    </div>
+    <br><br>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="selected__medication">
+            <div class="selected__medication__attr"><p class="badge badge-pill badge-light">{{medication.medication_name}}</p></div><br>
+            <div class="selected__medication__attr"><p class="badge badge-pill badge-light">Take {{medication.dose}} Tablets | {{medication.frequency}} Times {{medication.frequency_type}}</p></div> <br>
+            <div class="selected__medication__attr"><p class="badge badge-pill badge-light">{{medication.dose_frequency}}</p></div> <br>
+        </div>
+      </div>
+    <br>
+    <br>
+    <div class="col-md-6 reminder">
+      <div>
+        {{#if errors}}
+            {{#if errors.frequency}}
+            <div class="alert alert-warning alert-dismissible w-70" role="alert">
+            {{errors.frequency}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if errors.interval}}
+            <div class="alert alert-warning alert-dismissible w-70" role="alert">
+            {{errors.interval}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if errors.times}}
+            <div class="alert alert-warning alert-dismissible w-70" role="alert">
+            {{errors.times}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if errors.start_date}}
+            <div class="alert alert-warning alert-dismissible w-70" role="alert">
+            {{errors.start_date}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if errors.message}}
+            <div class="alert alert-warning alert-dismissible w-70" role="alert">
+            {{errors.message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+        {{/if}}
+      </div>
+      <br><br>
+      
+      <div>
+      <form action="/user/medications/{{medication.id}}/newreminder" method="POST" class="gx-3 gy-2 align-items-center reminder__form">
+        <div class="col-sm">
+          <label class="" for="frequency">Frequency</label>
+          <select class="form-control" name="frequency" id="">
+            <option >Choose...</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="hourly">Hourly</option>
+          </select>
+        </div> <br>
+        <div id="recurring__hourlypattern">
+          <div class="col-sm">
+            <label class="" for="interval">Interval</label>
+            <div class="input-group-text">Every 
+              <input type="number" class="form-control" name="hourly_interval" id="" placeholder="Enter a number...">Hour(s) 
+            </div>
+          </div>       
+        </div>
+        <div id="recurring__dailypattern">
+          <div class="col-sm">
+            <label class="" for="interval">Interval</label>
+            <div class="input-group">
+              <div class="input-group-preppend">
+                <span class="input-group-text" id="basic-addon2">Every</span>
+              </div> 
+              {{!-- <input type="number" min="1" max="7" class="form-control" name="interval" id="" placeholder="Enter a number"> --}}
+              <select class="form-control" name="daily_interval" id="">
+                <option>Select...</option>
+                <option value="1">Day</option>
+                <option value="2">Two Days</option>
+                <option value="3">Three Days</option>
+                <option value="4">Four Days</option>
+                <option value="5">Five Days</option>
+                <option value="6">Six Days</option>
+                <option value="7">Seven Days</option>
+              </select>
+              {{!-- <div class="input-group-append">
+                <span class="input-group-text" id="">Days</span>
+              </div>  --}}
+            </div>
+          </div>
+        </div>
+        <br>
+        <div id="recurring__weeklypattern">
+          <div class="col-sm">
+            <label class="" for="weekly-interval">Interval</label>
+            <div class="input-group-text">Every 
+              <input type="number" class="form-control" name="weekly_interval" id="" placeholder="Enter a number">Week(s) 
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="col-sm">
+          <label class="" for="time schedule">Time Schedule</label>
+          <div class="input-group">
+            <input type="time" class="form-control" name="timeschedule" id="">
+            <div class="input-group-append">
+              <span>
+              <select class="form-control" name="meridiem" id="meridiem">
+                <option value="am">A.M.</option>
+                <option value="pm">P.M.</option>
+              </select>
+              </span><input type="button" name="add" id="add_button" value="add" />
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="col-sm">
+          <label class="" for="time schedule">Multiple Time Schedule</label>
+          <div class="input-group">
+            <input type="text" class="form-control" name="times" id="times">
+            </span><input type="button" name="remove" id="remove_button" value="remove" />
+          </div>
+          <div class="input-group" id="reminder_times">
+
+          </div>
+        </div>
+        <br>
+        <div>
+        <div class="" role="alert" id="multiple-times">
+        </div>
+        </div>
+        <br>
+        <div class="col-sm">
+          <label class="" for="start date">Start Date</label>
+          <div class="input-group">
+            <input type="date" class="form-control" name="start_date" id="datepicker" placeholder="">
+          </div>
+        </div>
+        <br>
+        <div class="col-sm">
+          <label for="reminder notes" class="form-label">Reminder Notes</label>
+          <div class="input-group">
+            <textarea class="form-control" name="message" id="" rows="3"></textarea>
+          </div>
+        </div>
+        <br>
+        <div class="col-sm">
+          <button class="btn btn-secondary form-control" type="submit">Schedule</button>
+      </div>
+    </form>
+    </div>
+    </div>
+    </div>
+</div>
+</div>

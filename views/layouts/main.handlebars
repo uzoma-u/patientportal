@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="style-src-elem 'self' https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css 
+    https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css "
+        ; >
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/tui-default.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css" />
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+    <title>Patient Portal</title>
+    
+    {{#if showTests}}
+    <link rel="stylesheet" href="/vendor/mocha.css">
+    {{/if}}
+</head>
+
+<body>
+    <header>
+
+    </header>
+
+    <div class="container">
+
+
+
+
+        {{{body}}}
+    </div>
+
+
+    {{#if showTests}}
+        <div id='mocha'></div>
+        <script src='/vendor/mocha.js'></script>
+        <script src='/vendor/chai.js'></script>
+        <script>
+            mocha.ui('tdd');
+            var assert = chai.assert;
+        </script>
+        <script src="/qa/tests-global.js"></script>
+        {{#if pageTestScript}}
+        <script src="{{pageTestScript}}"></script>
+        {{/if}}
+        <script>mocha.run();</script>
+    {{/if}}
+
+    
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    {{!-- <script type="text/javascript" src="/js/tui-code-snippet.min.js"></script>
+    <script type="text/javascript" src="/js/tui-time-picker.min.js"></script>
+    <script type="text/javascript" src="/js/tui-date-picker.min.js"></script>
+    <script type="text/javascript" src="/js/tui-calendar.js"></script> --}}
+    <script type="text/javascript" src="/js/jquery.js"></script>
+</body>
+
+</html>

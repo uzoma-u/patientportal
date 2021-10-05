@@ -1,0 +1,53 @@
+<div class="container">
+    <br><br>
+    <h3 class=" mb-3">New Medication</h3>
+    <br>
+    <div class=" col-md-5 card" id="add__medications">
+        <div class="card-body" id="add__medication">
+        <form action="/admin/usermedication" method="POST" class="">
+        <input type="hidden" name="user_id" value="{{id}}">
+        <div class="form-group ">
+            <label for="medication_name"> Medication name:</label>
+            <input type="text" class="form-control" name="medication_name" placeholder="" id="">
+        </div>
+        <div class="form-group">
+            <label for="dosageform"> Dosage Form:</label>
+            <input type="text" class="form-control" name="dosage_form" placeholder="" id="">
+        </div>
+        <div class="form-group">
+            <label for="dosage">Dosage:</label>
+            <input type="text" class="form-control" name="dosage" placeholder="" id="">
+        </div>
+        <div class="form-group">
+            <label for="dose"> Dose:</label>
+            <input type="text" class="form-control" name="dose_frequency" placeholder="" id="">
+        </div>
+        <div class="form-group">
+            <label for="medicationquantity"> Quantity:</label>
+            <input type="text" class="form-control " name="quantity" placeholder="" id="">
+        </div>
+
+        <div class="form-group">
+            <label for="refillable"> isRefillable:</label>
+            <input type="text" class="form-control w-50" name="refillable" placeholder="" id="">
+        </div>
+        <div class="form-group">
+            <label for="refillable"> No of refills:</label>
+            <input type="text" class="form-control w-50" name="refills" placeholder="" id="">
+        </div>
+        <div class="form-group">
+            <label for="refillable"> Refill date:</label>
+            <input type="text" class="form-control w-50" name="refill_date" placeholder="" id="">
+        </div>
+        <div class="form-group">
+            <label for="prescribed by"> Prescribed By:</label>
+            <input type="text" class="form-control w-50" name="prescribedby" placeholder="" id="">
+        </div>
+        <button type="submit" class="btn btn-secondary">Submit</button>
+        </form>
+    </div>
+    </div>
+    </div>
+    <br><br><br>
+    </div>
+</div>

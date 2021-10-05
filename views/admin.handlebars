@@ -1,0 +1,65 @@
+<div class="container">
+    <h3 class=" mb-3">Add a Patient</h3>
+    <div class="row" id="register__patient">
+        
+        <br><br><br><br>
+        <form action="/admin/newuser" method="POST" class="">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="name"> Name:</label>
+                        <input type="text" class="form-control" name="name" placeholder="" id="">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="name"> Patient Id:</label>
+                        <input type="text" class="form-control" name="patientid" placeholder="" id="">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="phone">Phone:</label>
+                        <input type="text" class="form-control" name="phone" placeholder="" id="">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="email">Email:</label>
+                        <input type="text" class="form-control" name="email" placeholder="" id="">
+                </div>
+            </div> 
+            <div class="form-row">
+                <div class="form-group login__form col-md-6">
+                    <label for="diagnosis">Diagnosis:</label>
+                        <input type="text" class="form-control " name="diagnosis" placeholder="" id="">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="allergies">Allergies:</label>
+                        <input type="text" class="form-control " name="allergies" placeholder="" id="">
+                </div>
+            </div> 
+            <button type="submit" class="btn btn-secondary">Submit</button>
+        </form>
+    </div>
+
+    <br><br><br><br>
+    <div>
+        <div>
+            <h4>Patients</h4>
+        </div>
+
+        <div>
+            {{#each users}}   
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <img src="">
+                            
+                            <a href="admin/users/{{this.id}}"><p class="card-text">{{name}}: {{email}}</p></a>                           
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>

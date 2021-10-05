@@ -1,0 +1,49 @@
+<div class="container">
+    <br>
+    <nav>
+        <div class="row">
+            <div class="col-md-9">
+                <a class="nav-link " id="nav-home-tab" href="/" role="tab" aria-controls="nav-home">Home</a>
+            </div>
+            <div class="col-md-3">
+                <a class="nav-link" id="nav-contact-tab" href="/user/logout" role="tab" aria-controls="nav-contact">Logout</a>
+            </div>
+        </div>
+    </nav>
+    <div></div>
+    <div>
+        <div>
+            <h5>Hello {{user.name}}!</h5>
+        </div>
+        <div id="medication__containers">
+            
+                <section>
+                    <div class="medication__container__a" id="medication__container__a__section1">
+                    {{#each user.medications}}
+                        <div id="medication__col__head">
+                            {{!-- <img src="../img/medication1.jpg" id="medication__img"> --}}
+                        </div>
+                        <div class="medication__cols">
+                            <a href="/user/medications/{{this.id}}" class=""><p><b>{{medication_name}}</b><br>
+                            <small>{{medication_name}} | {{strength}}</small></p>
+                            <p class="card-text"><small>Prescribed By: {{prescribed_by}}</small></p>
+                            </a>
+                        <br>
+                        
+                        </div>
+                    {{/each}}
+                    </div>      
+                </section>
+           
+        <div id="medication__container__a__aside">
+        <aside class="">
+            <h2></h2>
+        </aside>
+    </div>
+    </div>
+    <br>
+    <div>
+         <a href="/user/myreminders" class="btn btn-secondary">View all reminders</a>
+    </div>
+    </div>
+</div>

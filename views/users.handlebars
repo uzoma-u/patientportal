@@ -1,0 +1,137 @@
+<div class="container">
+    <div class="row">
+    <div class="col-md-4">
+        <br><br>
+        <h2>A user's page</h2>
+        <p>Name: {{user.name}}</p>
+        <p>Patient ID: {{user.patientid}}</p>
+        <p>Patient Email: {{user.email}}</p>
+        <p>Diagnosis: {{user.diagnosis}}</p>
+        <p>Allergies: {{user.allergies}}</p>
+        
+        <br><br>
+        <h4>Medications:</h4>
+        {{#each user.medications}}
+        <p>{{medication_name}} <br>
+            Strength: {{strength}} <br>
+            Dosage Form: {{dosage_form}} <br>
+            Frequency Type: {{frequency_type}} <br>
+            Frequency: {{frequency}} <small>Times</small> {{frequency_type}} <br>
+            Dose: {{dose}} Tablets <br>
+            Quantity: {{quantity}} <small>Tablets</small> <br> 
+            refillable: {{refillable}} <br>
+            Refill Date: {{refill_date}} <br>
+            Refill: {{refills}} <small>Refills</small></p>
+        <br>
+        {{/each}}
+       
+
+    </div>
+
+    <div class="col-md-8">
+    <br><br>
+    <h3 class="">New Medication</h3>
+    <br>
+    <div class=" col-md-9 card" id="add__medications">
+        <div class="card-body" id="add__medication">
+        <form action="/admin/users/{{user.id}}/newmedication" method="POST" class="">
+        
+        <div class="form-group ">
+            <label for="medication_name"> Medication name:</label>
+            <input type="text" class="form-control" name="medication_name" placeholder="" id="">
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+        <div class="form-group ">
+            <label for="medication_name">Strength:</label>
+            <input type="text" class="form-control" name="strength" placeholder="" id="">
+        </div>
+        </div>
+        <div class="col-md-6">
+        <div class="form-group">
+            <label for="dosageform"> Medication Form:</label>
+            <input type="text" class="form-control" name="dosage_form" placeholder="" id="">
+        </div>
+        </div>
+        </div>
+        <div class="form-group">
+            <label for="dosage">Frequency Type:</label>
+            {{!-- <input type="text" class="form-control" name="frequency_type" placeholder="" id=""> --}}
+            <select class="form-control" name="frequency_type" id="">
+                <option value="" disabled selected>Select frequency type</option>
+                <option value="hourly">Hourly</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+        <div class="form-group">
+            <label for="dosage">Frequency:</label>
+            <input type="number" min="1" max="6" class="form-control" name="frequency" placeholder="" id="">
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">Times</span>
+            </div>
+        </div>
+            </div>
+            <div class="col-md-6">
+        <div class="form-group">
+            <label for="dose">Dose:</label>
+            <input type="number" min="1" max="4" class="form-control" name="dose" placeholder="" id="">
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">Tablets</span>
+            </div>
+        </div>
+        </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+        <div class="form-group">
+            <label for="medicationquantity"> Quantity:</label>
+            <input type="number" class="form-control " name="quantity" placeholder="" id="">
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">Tablets</span>
+            </div>
+        </div>
+        </div>
+        <div class="col-md-6">
+        <div class="form-group">
+            <label for="refillable"> Refillable:</label>
+            {{!-- <input type="text" class="form-control w-50" name="refillable" placeholder="" id=""> --}}
+            <select class="form-control" name="refillable" id="">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+        <div class="form-group">
+            <label for="refillable"> No of refills:</label>
+            <input type="number" min="1" max="10" class="form-control" name="refills" placeholder="" id="">
+        </div>
+        </div>
+        <div class="col-md-6">
+        <div class="form-group">
+            <label for="refillable"> Refill date:</label>
+            <input type="date" class="form-control" name="refill_date" placeholder="" id="">
+        </div>
+        </div>
+        </div>
+        <div class="form-group">
+            <label for="prescribed by"> Prescribed By:</label>
+            <input type="text" class="form-control" name="prescribedby" placeholder="" id="">
+        </div>
+        <div>
+        <button type="submit" class="btn btn-secondary">Submit</button>
+        </div>
+        </form>
+    </div>
+    </div>
+    </div>
+    <br><br><br>
+    </div>
+</div>
+</div>
+</div>
