@@ -4,8 +4,7 @@ const User = require('./User');
 
 
 
-
-const Medication = sequelize.define('medications', {
+const medicationSchema = {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -32,31 +31,16 @@ const Medication = sequelize.define('medications', {
     quantity: {
         type: DataTypes.INTEGER
     },
-    refillable: {
-        type: DataTypes.BOOLEAN
-    },
-    refills: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
     refill_date: {
         type: DataTypes.DATEONLY,
         allowNull:true
     },
     prescribed_by: {
         type: DataTypes.STRING
-    },
-    intake_log: {
-        type: DataTypes.JSONB
-    },
-    completed: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-    },
-    refilled: {
-        type: DataTypes.ARRAY(DataTypes.BOOLEAN)
     }
-}, {underscored: true});
+}
+
+const Medication = sequelize.define('medications', medicationSchema, {underscored: true} );
 
 
 

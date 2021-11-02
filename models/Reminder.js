@@ -5,7 +5,7 @@ const User = require('./User');
 
 
 
-const Reminder = sequelize.define('reminders', {
+const reminderSchema = {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -21,28 +21,24 @@ const Reminder = sequelize.define('reminders', {
     reminder_frequency_type: {
         type: DataTypes.STRING
     },
-    reminder_frequency: {
-        type: DataTypes.INTEGER
-    },
     reminder_interval: {
         type: DataTypes.INTEGER
     },
     reminder_times: {
         type: DataTypes.ARRAY(DataTypes.STRING),
     },
-    reminder_message: {
-        type: DataTypes.STRING
+    reminder_note: {
+        type: DataTypes.TEXT
     },
     reminder_dose: {
         type: DataTypes.INTEGER
     },
-    recurring: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-        
-    }
-  
-},{underscored: true});
+    intake_log: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
+}
+const Reminder = sequelize.define('reminders', reminderSchema, {underscored: true} );
 
 
 

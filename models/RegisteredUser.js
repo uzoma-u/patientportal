@@ -27,6 +27,18 @@ const RegisteredUser = sequelize.define('registered_users', {
 
 },{underscored: true});
 
+User.hasOne(RegisteredUser, {
+    foreignKey: {name: 'user_id'},
+    onDelete: 'cascade',
+    onUpdate: 'cascade'
+});
+RegisteredUser.belongsTo(User,  {
+    foreignKey: {name: 'user_id'},
+    onDelete: 'cascade',
+    onUpdate: 'cascade'
+});
+
+
 
 
 RegisteredUser.prototype.generateJasonWebToken = function() {

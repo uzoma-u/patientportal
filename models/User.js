@@ -1,10 +1,6 @@
-// const mongoose = require('mongoose');
-const db = require('./../config/db');
-const sequelize = require('./../config/db');
 const  {Sequelize, DataTypes} = require( 'sequelize');
-
-const { func } = require('joi');
 const jsonwebtoken = require('jsonwebtoken');
+const sequelize = require('./../config/db');
 
 
 const userSchema = {
@@ -28,21 +24,17 @@ const userSchema = {
         type: DataTypes.STRING
     },
     diagnosis: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
     },
     allergies: {
         type: DataTypes.STRING
-    },
-    // created_at: {
-    //     type: DataTypes.DATETIME,
-    //     defaultValue: Sequelize.NOW
-
-    // }
-    
+    }    
 }
 
-
 const User = sequelize.define('users', userSchema, {underscored: true} )
+
+
+
 
 User.prototype.generateJasonWebToken = function() {
     const payload = {
