@@ -1,23 +1,73 @@
 <div class="container">
-    <div class="">
-        <h6>My Reminders</h6>
-    </div>
+     <nav>
+        <div class="row">
+            <div class="col-md-9">
+                <a class="nav-link " id="nav-home-tab" href="/" role="tab" aria-controls="nav-home"><h3>Home</h3></a>
+            </div>
+            <div class="col-md-3">
+                <a class="nav-link" id="nav-contact-tab" href="/dashboard" role="tab" aria-controls="nav-contact"><h3>My Dashboard</h3></a>
+            </div>
+        </div>
+    </nav>
     <br>
     <div class="row">
         <div class="col-md-5">
             {{#each myreminders}} <br>
                 <div class="div__all__reminder">
-                    <b>{{date}}</b><br>
+                    <h5><b>{{date}}</b></h5><br>
                     <div class="div__reminder">
-                        {{#each value}} <br>
-                            {{time}} <br>
+                        {{#each value}}
+                        
+                            {{time}}<br>
+                            
                             {{#each value}}
-                                {{medicine}} <br>
+                            <div class="each__reminder">
+                                {{medicine}}<br>
+                                
+                                {{#if status}}
+                                    {{status}} <br>
+                                {{else}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="button__taken">
+                                        <form action="/user/medicationlog/{{id}}/taken" method="POST">
+                                            <input type="hidden" name="date" value={{date}}>
+                                            <input type="hidden" name="time" value= "{{time}}">
+                                            <input type="submit" name='status' value="Taken"> 
+                                                                  
+                                        </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-2">
+                                        <div class="button__missed">
+                                        <form action="/user/medicationlog/{{id}}/missed" method="POST">
+                                            <input type="hidden" name="date" value={{date}}>
+                                            <input type="hidden" name="time" value= "{{time}}">
+                                            <input type="submit" name='status' value="Missed">                                    
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{/if}}
+                                <br>
+                                </div>
                             {{/each}}
                         {{/each}}
                     </div>
                 </div>
             {{/each}}
+        </div>
+        <div class="col-md-4">
+            {{#each allreminders}}
+            {{recurring_date}} <br>
+                {{#each occurrence}}
+                    {{this.time}} <br>
+                    {{#each value}}
+                        {{this.reminder_id}} <br><br>
+                    {{/each}}
+                {{/each}}
+            {{/each}} <br>
         </div>
     </div>
 </div>

@@ -15,11 +15,10 @@
         <div>
             <h4></h4>
         </div>
-        <div class="row" id="medication__containers">
-            <div class="col-sm-7">
+        <div class="row" id="medication__container">
+            <div class="col-sm-10">
                 <section>
-                        <div id="medication__col__head">
-                        </div>
+                        
                         <div class="medication__cols">
                             <p><small>Name</small><br> {{medication.medication_name}}</p>
                             <p><small>Strength</small><br> {{medication.strength}}</p>
@@ -27,7 +26,6 @@
                             <p><small>Frequency</small><br>{{medication.frequency}} Times, {{medication.frequency_type}}</p>
                             <p><small>Dose</small><br>{{medication.dose}} Tablets</p>
                             <p><small>Quantity</small><br>{{medication.quantity}}</p>
-                            <p><small>Refills</small><br>{{medication.refills}}</p>
                             <p class="card-text"><small>Refill Date</small><br>{{medication.refill_date}}</p>
                             <p class="card-text"><small>Prescribed By</small><br>{{medication.prescribed_by}}</p>
                             <br>                        
@@ -40,27 +38,27 @@
                 <div class="medication__reminder__container">
                 <div>
                     {{#if medication.reminder}}
-                    <div>
-                        <h6>Reminder</h6>
-                    </div>
-                    <div>
-                        <p><br>{{reminder.reminder_frequency_type}}</p>
+                        <div>
+                            <h6>Reminder</h6>
+                        </div>
+                    
+                        <p><br>{{reminder.reminder_frequency_type}} Medication</p>
                         <p><small>Schedule | Dose</small><br>
                         {{#each reminderObj}}
                             {{reminder_time}}:00 | <small>{{reminder_dose}} PILL</small> </p>
                         {{/each}}
-                            <p><small>Quantity | Remaining</small><br>Total {{medication.quantity}} Tablets | </p>
+                            <p><small>Quantity | Remaining</small><br>{{medication.quantity}} Tablets | {{medRemain}} Tablet</p>
                             <p><small>Duration</small><br>{{duration}} </p>
-                            <a href="/user/medications/{{medication.id}}/reminder/{{reminder.id}}/delete" class="btn btn-secondary"><small>Delete Schedule</small></a>
+                            <a href="/user/reminder/{{reminder.id}}/delete" class="btn btn-secondary"><small>Delete Schedule</small></a>
                         {{else}}
+                            
                             <a href="/user/medications/{{medication.id}}/newreminder" class="btn btn-secondary">Add Reminder</a>
-                        {{/if}}
-                    </div>
+                    {{/if}}
+                   
                 </div>
 
             </section>
             </div>
     </div>
     <br>
-    <div id="calendar" style="height: 800px;"></div>
 </div>

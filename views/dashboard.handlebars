@@ -3,25 +3,40 @@
     <nav>
         <div class="row">
             <div class="col-md-9">
-                <a class="nav-link " id="nav-home-tab" href="/" role="tab" aria-controls="nav-home">Home</a>
+                <a class="nav-link " id="nav-home-tab" href="/" role="tab" aria-controls="nav-home"><h3>Home</h3></a>
             </div>
             <div class="col-md-3">
-                <a class="nav-link" id="nav-contact-tab" href="/user/logout" role="tab" aria-controls="nav-contact">Logout</a>
+                <a class="nav-link" id="nav-contact-tab" href="/user/logout" role="tab" aria-controls="nav-contact"><h3>Logout</h3></a>
             </div>
         </div>
     </nav>
+    <br><br>
     <div></div>
     <div>
         <div>
-            <h5>Hello {{user.name}}!</h5>
+            <h5><b>Welcome {{user.name}}!</b></h5>
         </div>
-        <div id="medication__containers">
+        <br><br>
+        <div class=" medication__cols">
+            <h5><b> My Records </b></h5>
+            <p><b>Patient Id: </b>{{user.patientid}}</p>
+            <p><b>Email: </b> {{user.email}}</p>
+            <p><b>Diagnosis: </b> {{user.diagnosis}}</p>
+            <p><b>Allergies: </b> {{user.allergies}}</p>
+        </div>
+        <div class="medication__containers">
             
                 <section>
+                    {{#if user.medications}}
+                    <div>
+                        <h5><b>My Medications</b></h5>
+                    </div>
+                    <br><br>
                     <div class="medication__container__a" id="medication__container__a__section1">
+                        
                     {{#each user.medications}}
                         <div id="medication__col__head">
-                            {{!-- <img src="../img/medication1.jpg" id="medication__img"> --}}
+                        
                         </div>
                         <div class="medication__cols">
                             <a href="/user/medications/{{this.id}}" class=""><p><b>{{medication_name}}</b><br>
@@ -34,16 +49,14 @@
                     {{/each}}
                     </div>      
                 </section>
-           
-        <div id="medication__container__a__aside">
-        <aside class="">
-            <h2></h2>
-        </aside>
-    </div>
     </div>
     <br>
     <div>
-         <a href="/user/myreminders" class="btn btn-secondary">View all reminders</a>
+        
+            <a href="/user/myreminders" class="btn btn-secondary">View all reminders</a>
+            {{else}}
+            <h5><b>No Medications</b></h5>
+        {{/if}}
     </div>
     </div>
 </div>

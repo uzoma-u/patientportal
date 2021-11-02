@@ -1,45 +1,118 @@
 <div class="container">
-    <h3 class=" mb-3">Add a Patient</h3>
-    <div class="row" id="register__patient">
-        
-        <br><br><br><br>
-        <form action="/admin/newuser" method="POST" class="">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="name"> Name:</label>
-                        <input type="text" class="form-control" name="name" placeholder="" id="">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="name"> Patient Id:</label>
-                        <input type="text" class="form-control" name="patientid" placeholder="" id="">
-                </div>
+    <br>
+    <div>
+    <nav>
+        <div class="row">
+            <div class="col-md-9">
+                <a class="nav-link " id="nav-home-tab" href="/" role="tab" aria-controls="nav-home"><h5>Home</h5></a>
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="phone">Phone:</label>
-                        <input type="text" class="form-control" name="phone" placeholder="" id="">
+            <div class="col-md-3">
+                <a class="nav-link" id="nav-contact-tab" href="/user/logout" role="tab" aria-controls="nav-contact"><h5>Logout</h5></a>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="container admin__page">
+    <div class="">
+        <div>
+            <h5 class=" mb-3">Add a Patient</h5>
+        </div>
+
+        <div>
+        {{#if error}}
+            {{#if error.name}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{error.name}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if error.email}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{error.email}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if error.patientid}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{error.patientid}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if error.phone}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{errors.phone}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if error.diagnosis}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{error.diagnosis}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+            {{#if error.allergies}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{error.allergies}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {{/if}}
+        {{/if}}
+    </div>
+
+        <br><br><br><br>
+        <div class="row" id="register__patient">
+            
+            <br><br><br><br>
+            <form action="/admin/newuser" method="POST" class="">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="name"> Name:</label>
+                            <input type="text" class="form-control" name="name" placeholder="" id="">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name"> Patient Id:</label>
+                            <input type="text" class="form-control" name="patientid" placeholder="" id="">
+                    </div>
                 </div>
-                <div class="form-group col-md-6">
-                    <label for="email">Email:</label>
-                        <input type="text" class="form-control" name="email" placeholder="" id="">
-                </div>
-            </div> 
-            <div class="form-row">
-                <div class="form-group login__form col-md-6">
-                    <label for="diagnosis">Diagnosis:</label>
-                        <input type="text" class="form-control " name="diagnosis" placeholder="" id="">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="allergies">Allergies:</label>
-                        <input type="text" class="form-control " name="allergies" placeholder="" id="">
-                </div>
-            </div> 
-            <button type="submit" class="btn btn-secondary">Submit</button>
-        </form>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="phone">Phone:</label>
+                            <input type="text" class="form-control" name="phone" placeholder="" id="">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">Email:</label>
+                            <input type="text" class="form-control" name="email" placeholder="" id="">
+                    </div>
+                </div> 
+                <div class="form-row">
+                    <div class="form-group login__form col-md-6">
+                        <label for="diagnosis">Diagnosis:</label>
+                            <input type="text" class="form-control " name="diagnosis" placeholder="" id="">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="allergies">Allergies:</label>
+                            <input type="text" class="form-control " name="allergies" placeholder="" id="">
+                    </div>
+                </div> 
+                <button type="submit" class="btn btn-secondary">Submit</button>
+            </form>
+        </div>
     </div>
 
     <br><br><br><br>
-    <div>
+    <div class="show__patients">
         <div>
             <h4>Patients</h4>
         </div>
@@ -52,7 +125,12 @@
                         <div class="card-body">
                             <img src="">
                             
-                            <a href="admin/users/{{this.id}}"><p class="card-text">{{name}}: {{email}}</p></a>                           
+                            <a href="admin/users/{{this.id}}"><p class="card-text">{{name}}: {{email}}</p></a>
+
+                            <form action="/admin/delete/user/{{id}}" method="POST">
+                                <input type="submit" name='status' value="Delete">               
+                            </form>
+                                                       
                             </p>
                         </div>
                     </div>
@@ -62,4 +140,5 @@
             {{/each}}
         </div>
     </div>
+</div>
 </div>
