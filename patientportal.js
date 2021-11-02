@@ -1,7 +1,3 @@
-// const Calendar = require('tui-calendar');
-// require("tui-calendar/dist/tui-calendar.css");
-// require("tui-date-picker/dist/tui-date-picker.css");
-// require("tui-time-picker/dist/tui-time-picker.css");
 const sequelize = require('./config/db')
 const passport = require('passport');
 const index = require('./routes/index');
@@ -28,6 +24,8 @@ require('./config/passport')(passport)
 
 dotenv.config({ path:'./config/config.env' });
 
+
+
 sequelize.authenticate()
     .then(() => console.log('Connection has been established successfully..'))
     .catch(err => console.log('Error: ' + err));
@@ -50,6 +48,8 @@ app.use(session({
     cookie: {maxAge: 86400000, secure: false}
 }));
 myStore.sync()
+
+
 
 app.use(passport.initialize());
 app.use(passport.session());
