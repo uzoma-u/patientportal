@@ -1,23 +1,15 @@
 const { validationResult, checkSchema } = require('express-validator');
-const fs = require('fs');
-const path = require('path');
-const passport = require('passport');
-const moment = require('moment');
-const _ = require('lodash');
-const pathToKey = path.join(__dirname, '..', 'rsa_id_pub.pem');
-const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
-const utils = require('../lib/utils');
-const auth = require('../config/auth')
-const { ensureAuthenticated } = require('../config/auth');
-const User = require('../models/User');
-const Medication = require('../models/Medication');
 const RegisteredUser = require('../models/RegisteredUser');
+const Medication = require('../models/Medication');
 const Reminder = require('../models/Reminder');
-
+const User = require('../models/User');
+const auth = require('../config/auth');
+const schedule = require('node-schedule');
+const passport = require('passport');
+const utils = require('../lib/utils');
+const moment = require('moment');
 const express = require('express');
-const { groupBy } = require('lodash');
 const router = express.Router();
-
 
 
 
@@ -54,44 +46,36 @@ router.post('/register', checkSchema(auth.regSchema), async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            // console.log(errors)
-            // return res.render('register', {
-            //     errors: errors.array()
-            // })
             const theErrors = {}
             errors.array().map(error => {
-
                 theErrors[error.param] = error.msg
-
-            })
-
-            return res.render('register', {
-                errors: theErrors
-            })
+            });
+            return res.render('register', {errors: theErrors});
         }
-        const aUser = await User.findOne({ where: { email: req.body.email } })
-        if (!aUser)
-            req.flash('error_msg', 'Registered was not succesful, User not found')
-        res.render('register', {
+        else {
+            const aUser = await User.findOne({ where: { email: req.body.email } });
+            
+            if (!aUser) {
+                req.flash('error_msg','User not found');
+                res.render('register');
+            }
+            else {
+                const aregUser = await RegisteredUser.findOne({ where: {user_id: aUser.id } });
+                if (!aregUser) {
+                    const hashPassword = await utils.passwordHash(req.body.password);
+                    const regUser = await RegisteredUser.create({ user_id: aUser.id, password: hashPassword });
 
-        })
-        console.log(req.body.password)
-        const hashPassword = await utils.passwordHash(req.body.password)
-        console.log(hashPassword)
-        const regUser = await RegisteredUser.create({ user_id: aUser.id, password: hashPassword })
-
-        // const token = utils.generateJasonWebToken(regUser.id)
-        const token = regUser.generateJasonWebToken()
-        req.flash('success_msg', 'Registered succesfully')
-        res.render('login', {})
-        // res.status('x-authentication-token', token)
-        // console.log(regUser)
-        // res.send(regUser.user_id, aUser.email, token)
+                    req.flash('success_msg', 'Registered succesfully');
+                    res.render('login', {});
+                }
+                res.render('login');
+            }
+        }
     }
     catch (error) {
-        console.log(error)
+        console.log(error);
+        res.redirect('/register');
     }
-
 });
 
 router.get('/logout', (req, res) => {
@@ -100,51 +84,43 @@ router.get('/logout', (req, res) => {
     res.redirect('/user/login')
 });
 
-router.get('/medications', ensureAuthenticated, async (req, res) => {
-    try {
-        const user = await User.findOne({ where: { id: req.user }, include: Medication })
-        res.render('dashboard', {
-            user: user
-        });
-    }
-    catch (error) {
-        console.log(error)
-    }
-});
-
 router.get('/medications/:id', async (req, res) => {
     try {
+        let medTaken = []
         const medication = await Medication.findOne({ where: { id: req.params.id }, include: Reminder })
-        const medicationReminder = await medication.getReminder() //Reminder.findOne({where: {medication_id: medication.id}})
+        const medicationReminder = await medication.getReminder();
 
-        const remainingQuantity = medicationReminder
-        const howLong = (medication.quantity / (medication.dose * medication.frequency))
+        const howLong = (medication.quantity / (medication.dose * medication.frequency));
         let duration;
+
         if (howLong < 7) duration = howLong.toString() + " Days"
         else duration = (Math.floor(howLong / 7)).toString() + " Weeks"
 
         const obj = []
         if (medicationReminder) {
+            medicationReminder.intake_log.forEach(log => { 
+                const ob = log.logs.map(each => { 
+                    if (each.status === "Taken") { medTaken.push(each.status); return each.status} });
+                })
+            
             medicationReminder.reminder_times.forEach(time => {
                 const newObj = { reminder_time: time, reminder_dose: medication.dose }
-                obj.push(newObj)
-
-            })
-            console.log(obj)
+                obj.push(newObj);
+            });
         }
-        console.log(obj)
+        const medRemain = medication.quantity-medTaken.length
 
-
-        console.log(medicationReminder)
         res.render('medication', {
-            medication: medication,
-            reminder: medicationReminder,
-            duration: duration,
-            reminderObj: obj
+            medication,
+            duration,
+            medTaken,
+            medRemain,
+            reminderObj: obj,
+            reminder: medicationReminder
         });
     }
     catch (error) {
-        console.log(error)
+        console.log(error);
     }
 });
 
@@ -163,30 +139,28 @@ router.get('/medications/:id/newreminder', async (req, res) => {
 });
 
 router.post('/medications/:id/newreminder', checkSchema(auth.reminderSchema), async (req, res) => {
-
     try {
         const errors = validationResult(req);
+
         if (!errors.isEmpty()) {
-            // console.log(errors)
-            // return res.render('register', {
-            //     errors: errors.array()
-            // })
             const theErrors = {}
             errors.array().map(error => {
                 theErrors[error.param] = error.msg
-            })
-            console.log(errors)
+            });
             return res.render('reminder', {
                 errors: theErrors
-            })
+            });
         }
         else {
             const medication = await Medication.findOne({ where: { id: req.params.id } })
-            const reminder = await Reminder.findOne({ where: { medication_id: medication.id } })
 
-            if (reminder) return res.redirect('/user/medications')
+            if (medication.reminder) {
+                res.send(medication.reminder);
+            }
+            const reminder_times = req.body.times.split(',').map(time => { return parseInt(time) });
 
             let interval;
+
             if (req.body.frequency === 'hourly') {
                 interval = req.body.hourly_interval
             }
@@ -197,29 +171,18 @@ router.post('/medications/:id/newreminder', checkSchema(auth.reminderSchema), as
                 interval = req.body.weekly_interval
             }
 
-            const reminderTime = []
-            req.body.times.split(',').forEach(time => {
-                console.log(time)
-                reminderTime.push(parseInt(time.slice(0, 2)))
-            })
-            console.log(typeof req.body.times)
-            console.log(reminderTime)
-
             const newReminder = await Reminder.create({
                 user_id: medication.user_id,
                 medication_id: req.params.id,
                 reminder_frequency_type: req.body.frequency,
                 start_date: req.body.start_date,
                 reminder_interval: interval,
-                reminder_times: reminderTime,
-                reminder_frequency: req.body.times.split(',').length,
-                reminder_message: req.body.message,
+                reminder_times: reminder_times,
+                reminder_note: req.body.note,
                 reminder_dose: medication.dose
             });
-            console.log(newReminder)
-            res.redirect('/user/medications/:req.params.id')
-            // res.send(newReminder);
         }
+        res.redirect('/user/medications')
     }
     catch (err) {
         console.log(err)
@@ -227,41 +190,161 @@ router.post('/medications/:id/newreminder', checkSchema(auth.reminderSchema), as
 });
 
 
-router.get('/medications/:id/reminder/update', async (req, res) => {
+router.get('/myreminders', async (req, res) => {
     try {
-        const reminder = await Reminder.findOne({ where: { medication_id: req.params.id } })
-        res.render('reminder')
+        const myMeds = await Medication.findAll({ where: { user_id: req.user }, include: Reminder }); 
+
+        let myReminders = []
+        
+        myMeds.forEach(med => {
+            const count = med.quantity
+
+            if (med.reminder) {
+                const medRem = med.reminder
+
+                let reminders = []
+                if (medRem.reminder_frequency_type.toLowerCase() === 'hourly') {
+                    reminders = utils.hourlyRule(medRem.reminder_interval, medRem.start_date, medRem.reminder_times, count)
+                }
+                else if (medRem.reminder_frequency_type.toLowerCase() === 'daily') {
+                    console.log(medRem.reminder_interval, medRem.start_date, medRem.reminder_times, count)
+                    reminders = utils.dailyRule(medRem.reminder_interval, medRem.start_date, medRem.reminder_times, count)
+                }
+                else if (medRem.reminder_frequency_type.toLowerCase() === 'weekly') {
+                    reminders = utils.weeklyRule(medRem.reminder_interval, medRem.start_date, medRem.reminder_times, count)
+                }
+                console.log(reminders)
+                reminders.map((timestamp) => {
+                    let ne = {
+                        id: medRem.id,
+                        date: moment.utc(timestamp).format('L'),
+                        time: moment.utc(timestamp).format('LT'),
+                        medicine: med.medication_name
+                    }
+                    const dateLog = medRem.intake_log.find(obj => { return obj.date === ne.date});
+                    
+                    if (dateLog !== undefined) {
+                        const timeLog = dateLog.logs.find(obj => { return obj.time === ne.time});
+
+                        if (timeLog !== undefined) {
+                            ne.status = timeLog.status
+                        }
+                    }                   
+                    myReminders.push(ne);
+                    myReminders.sort((a, b) => new Date(a.date) - new Date(b.date))
+
+                    return ne
+                }); 
+            }  
+        });
+
+        const groupedReminders = utils.groupBy(myReminders, 'date');
+        
+        const groupedRemindersKeys = Object.keys(groupedReminders)
+
+        const myGroupedReminders = groupedRemindersKeys.map(key => {
+            
+            const groupedByTime = utils.groupBy(groupedReminders[key], 'time')
+
+            const timeGroupedKeys = Object.keys(groupedByTime)
+            
+            const timeRems = timeGroupedKeys.map(each => {
+                return {
+                    time: each,
+                    value: groupedByTime[each]
+                }
+            });
+            return {
+                date: key,
+                value: timeRems
+            }
+        })
+        
+        res.render('myreminders', {
+            myreminders: myGroupedReminders
+        });
     }
     catch (error) {
         console.log(error)
     }
 });
 
-router.post('/medications/:id/reminder/update', async (req, res) => {
-    try {
-        const updatedReminder = await Reminder.update({
-            user_id: req.body.user_id,
-            medication_id: req.params.id,
-            reminder_frequency_type: req.body.frequency,
-            start_date: req.body.start_date,
-            reminder_interval: interval,
-            reminder_times: req.body.times.split(','),
-            reminder_frequency: req.body.times.split(',').length,
-            reminder_message: req.body.message
-        },
-            { where: { medication_id: req.params.id } })
 
+router.post('/medicationlog/:id/taken', async (req, res) => {
+    try {
+        const theRem = await Reminder.findOne( {where: {id: req.params.id} });
+        
+        const search = theRem.intake_log.find(log => { return log.date === req.body.date });
+
+        if (search !== undefined) {
+
+            search.logs.push({time: req.body.time, status: req.body.status});
+
+            const theIndex = theRem.intake_log.findIndex(log => { return log.date === req.body.date });
+
+            const newIntakeLog = theRem.intake_log
+
+            newIntakeLog[theIndex] = search;
+      
+            theRem.intake_log = newIntakeLog;
+            theRem.changed("intake_log", true);
+            await theRem.save();          
+        }
+        else { 
+            let anIntakeLog = []
+            const newLog = {date: req.body.date, logs: [{ time: req.body.time, status: req.body.status} ]}
+            anIntakeLog.push(newLog);
+
+            theRem.update({intake_log: theRem.intake_log.concat(anIntakeLog)});
+            await theRem.save()
+        }
+        res.redirect('/user/myreminders');
     }
-    catch (error) {
-        console.log(error)
+    catch(error) {
+        console.log(error);
     }
 });
 
-router.get('/medications/:id/reminder/:id/delete', async (req, res) => {
+
+router.post('/medicationlog/:id/missed', async (req, res) => {
     try {
-        // session=req.session
-        // session.user_id=req.user
-        const deletedReminder = await Reminder.destroy({ where: { id: req.params.id } });
+        const theRem = await Reminder.findOne( {where: {id: req.params.id} });
+        
+        const search = theRem.intake_log.find(log => { return log.date === req.body.date });
+
+        if (search !== undefined) {
+
+            search.logs.push({time: req.body.time, status: req.body.status});
+
+            const remIntakeLog = theRem.intake_log
+
+            const theIndex = remIntakeLog.findIndex(log => { return log.date === req.body.date });
+
+            remIntakeLog[theIndex] = search;
+      
+            theRem.intake_log = remIntakeLog;
+            theRem.changed("intake_log", true);
+            await theRem.save();          
+        }
+        else { 
+            let anIntakeLog = []
+            const newLog = {date: req.body.date, logs: [{ time: req.body.time, status: req.body.status} ]}
+
+            anIntakeLog.push(newLog);
+
+            theRem.update({intake_log: theRem.intake_log.concat(anIntakeLog)});
+            await theRem.save()
+        }
+        res.redirect('/user/myreminders');
+    }
+    catch(error) {
+        console.log(error);
+    }
+});
+
+router.get('/reminder/:id/delete', async (req, res) => {
+    try {
+        await Reminder.destroy({ where: { id: req.params.id } });
         console.log('done')
         res.redirect('/dashboard')
     }
@@ -271,140 +354,43 @@ router.get('/medications/:id/reminder/:id/delete', async (req, res) => {
 });
 
 
-router.get('/myreminders', async (req, res) => {
+router.get('/appreminders', async (req, res) => {
     try {
-        const meds = await Medication.findAll({ where: { user_id: req.user }, include: Reminder });
+        let ee = []
+        const d = new Date();
 
-        let testReminders = []
-        
-        meds.forEach(med => {
+        const allReminders = await Reminder.findAll();
 
-            const count = med.quantity
-
-            if (med.reminder) {
-                const medRem = med.reminder
-
-                let reminders = []
-
-                if (medRem.reminder_frequency_type.toLowerCase() === 'hourly') {
-                    reminders = utils.hourlyRule(medRem.reminder_interval, medRem.start_date, medRem.reminder_times, count)
-                }
-                else if (medRem.reminder_frequency_type.toLowerCase() === 'daily') {
-                    console.log(medRem.reminder_interval, medRem.start_date, medRem.reminder_times, count)
-
-                    reminders = utils.dailyRule(medRem.reminder_interval, medRem.start_date, medRem.reminder_times, count)
-                }
-                else if (medRem.reminder_frequency_type.toLowerCase() === 'weekly') {
-                    reminders = utils.weeklyRule(reminder_interval, start_date, reminder_times, count)
-                }
-                // console.log(reminders)
-
-                reminders.map((timestamp) => {
-                    const refDate = moment.utc(timestamp).format('L');
-                    const refTime = moment.utc(timestamp).format('LT')
-
-                    testReminders.push({
-                        date: refDate,
-                        time: refTime,
-                        medicine: med.medication_name,
-                        description: medRem.reminder_message
-                    });
-                });
+        allReminders.forEach(rem => {
+            let reminders = []
+            if (rem.reminder_frequency_type.toLowerCase() === 'hourly') {
+                reminders = utils.hourlyRule(rem.reminder_interval, rem.start_date, rem.reminder_times, count)
             }
+            else if (rem.reminder_frequency_type.toLowerCase() === 'daily') {
+                console.log(rem.reminder_interval, rem.start_date, rem.reminder_times, count)
+                reminders = utils.dailyRule(rem.reminder_interval, rem.start_date, rem.reminder_times, count)
+            }
+            else if (rem.reminder_frequency_type.toLowerCase() === 'weekly') {
+                reminders = utils.weeklyRule(rem.reminder_interval, rem.start_date, rem.reminder_times, count)
+            }
+            console.log(reminders)
+            ee.concat(reminders)
+            console.log(ee)
         })
         
-        const groupedReminders = utils.groupBy(testReminders, 'date');
-        // console.log(groupedReminders)
 
-        const groupedRemindersKeys = Object.keys(groupedReminders)
-
-        const myreminders = groupedRemindersKeys.map(key => {
-            // console.log(groupedReminders[key])
-            
-            const res = utils.groupBy(groupedReminders[key], 'time')
-
-            const resGroupedKeys = Object.keys(res)
-            // console.log(res);
-            const myrems = resGroupedKeys.map(ke => {
-                return {
-                    time: ke,
-                    value: res[ke]
-                }
-            });
-            console.log(myrems)
-
-            return {
-                date: key,
-                value: myrems
-            }
-        })
-        console.log(myreminders)
-
-        res.render('myreminders', {
-            myreminders
-        })
+       intake_log.forEach(log => {if (log.date === d) {
+           const job = schedule.scheduleJob({});
+        }});
     }
-    catch (error) {
-        console.log(error)
+    catch(err) {
+        console.log(err)
     }
 });
 
 
 
+                    
+                    
+module.exports = router                 
 
-
-
-
-
-module.exports = router
-
-
-
-
-
-
-// const sortedTestReminders = _.sortBy(testReminders, ['date', 'time.slice(6, 7)']) //, 'time.slice(0, 2)'])
-                // console.log(sortedTestReminders)
-                // testReminders.sort(function(z, y) {
-                //     return z.date - y.date
-                // })
-                // console.log(testReminders)
-                // const groupedTestReminders = _.groupBy(sortedTestReminders, ['date'])
-                // console.log(groupedTestReminders)
-                // groupedTestReminders.forEach(testReminder => {
-                //     const objExist = objRems.find(ob => {return ob.date === testReminder.date && ob.time === testReminder.time})
-
-                //     if (objExist) {
-                //         objExist.medication.push(testReminder.medicine)
-                //         objExist.reminder_message.push(testReminder.description)
-                //     }
-                //     else {
-                //         const newObj = {reminder_date: testReminder.date, reminder_time: testReminder.time, medication: [testReminder.medicine], reminder_message: [testReminder.description]}
-                //         objRems.push(newObj)
-                //     }
-                // })   
-                // console.log(objRems)
-
-
-
-// testReminders.forEach(testReminder => {
-        //         const objExist = objRems.find( (ob) => { return ob.reminder_date === testReminder.date && ob.reminder_time === testReminder.time})
-
-        //         if (objExist) {
-        //             if (objExist.reminder_time === testReminder.time) 
-        //             objExist.property.push( {medications: testReminder.medicine, reminder_message: testReminder.description}  )
-
-        //             else {
-        //                 objExist.reminder_time = testReminder.time  
-        //                 objExist.property.push( {medications: testReminder.medicine, reminder_message: testReminder.description} ) }
-        //         }
-        //         else {
-        //             const newObj = {
-        //                 reminder_date: testReminder.date, 
-        //                 reminder_time: testReminder.time, 
-        //                 property: [ { medications: testReminder.medicine, reminder_message: testReminder.description } ]
-        //             }
-        //             objRems.push(newObj)
-        //         }
-        //     })
-        //     console.log(objRems)

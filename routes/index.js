@@ -1,4 +1,3 @@
-const {validateInput, issueJWT} = require('./../lib/utils')
 const { ensureAuthenticated } = require('../config/auth');
 const Medication = require('../models/Medication');
 const User = require('./../models/User');
@@ -12,26 +11,18 @@ router.get('/', (req, res) => {
 
 router.get('/dashboard', ensureAuthenticated, async (req, res) => {
     try {
-        session=req.session;
-        if(session.req.user) {
-            const user = await User.findOne({ where: {id: req.user},
-                include: {
-                model: Medication
-                }
-            });
-            console.log(JSON.stringify(user, null, 2));
-
+        if(req.user) {
+            // Return user and user's medications
+            const user = await User.findOne({ where: {id: req.user}, include: Medication });
             res.render('dashboard', {
             user: user,
             });
         }
     }
     catch(error) {
-        console.log(error)
+        console.log(error);
     }
-})
-
-
+});
 
 
 
