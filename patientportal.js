@@ -5,9 +5,10 @@ const user = require('./routes/user');
 const admin = require('./routes/admin');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
-const flash = require('connect-flash')
+const flash = require('connect-flash');
+const schedule = require('node-schedule');
 const session = require('express-session');
-const exphbs = require('express-handlebars')
+const exphbs = require('express-handlebars');
 const handlebars = exphbs.create( 
     {defaultLayout: 'main', 
     runtimeOptions: {
@@ -71,7 +72,10 @@ process.on('warning', (warning) => {
     console.log(warning.stack);
 });
 
-
+const now = new Date(2021, 10, 2, 23, 26, 0);
+const job = schedule.scheduleJob(now, function() {
+    console.log('The time set....')
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port: ${port}`));
